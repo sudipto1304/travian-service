@@ -1,0 +1,26 @@
+server:
+  port: 4501
+spring:
+  application:
+    name: travian-accountinfo
+internet:
+  proxy:
+    enable: true
+    host: east.network.fedex.com
+    port: 3128
+logging:
+  level:
+    root: WARN
+    com:
+      travian: DEBUG
+    org:
+      springframework:
+        security: DEBUG
+        web: DEBUG
+      hibernate: WARN
+      apache:
+        commons:
+          dbcp2: ERROR
+  pattern:
+    console: '%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n'
+    
