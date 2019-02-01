@@ -5,7 +5,7 @@ spring:
     name: travian-accountinfo
 internet:
   proxy:
-    enable: false
+    enable: true
     host: east.network.fedex.com
     port: 3128
 logging:

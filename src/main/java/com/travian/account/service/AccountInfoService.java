@@ -22,6 +22,7 @@ import com.travian.account.request.HttpRequest;
 import com.travian.account.response.AccountInfoResponse;
 import com.travian.account.response.HomeResponse;
 import com.travian.account.response.HttpResponse;
+import com.travian.account.response.UserInfo;
 
 @Service
 public class AccountInfoService {
@@ -69,9 +70,13 @@ public class AccountInfoService {
 	
 	private AccountInfoResponse parseAccountResponse(HttpResponse loginResponse) {
 		AccountInfoResponse response = new AccountInfoResponse();
+		UserInfo user = new UserInfo();
 		Document doc = Jsoup.parse(loginResponse.getBody());
-		Elements userInfoElm = doc.select("div.playerName > img");
-		String tribe = userInfoElm.attr("alt");
+		Elements userInfoElement = doc.select("div.playerName > a");
+		user.setTribe(userInfoElement.get(0).getElementsByClass("nation").attr("title"));
+		user.setLink("/"+userInfoElement.get(1).attr("href"));
+		user.setUserName(userInfoElement.get(1).text());
+		response.setUser(user);
 		return response;
 	}
 
