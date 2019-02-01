@@ -12,6 +12,6 @@ public class ProxyProperties {
 	
 	private boolean enable;
 	private String host;
-	private int port;
+	private String port;
 
 }

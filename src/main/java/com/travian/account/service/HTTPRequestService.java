@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,110 +39,51 @@ public class HTTPRequestService {
 	
 	
 	public HttpResponse get(HttpRequest request) throws IOException {
-		URL url = new URL("https://"+request.getHost());
+		String url = "https://"+request.getHost();
 		HttpResponse response = new HttpResponse();
-		HttpURLConnection uc=null;
+		Connection.Response res=null;
 		if(proxyProp.isEnable()) {
-			Proxy proxy = new Proxy(                                      
-			        Proxy.Type.HTTP,                                     
-			        InetSocketAddress.createUnresolved(proxyProp.getHost(), proxyProp.getPort())
-			);
-			uc= (HttpURLConnection)url.openConnection(proxy);
+			System.setProperty("http.proxyHost", proxyProp.getHost());
+			System.setProperty("http.proxyPort", proxyProp.getPort());
+		}
+		if(request.getCookies()!=null && !request.getCookies().isEmpty()) {
+			res = Jsoup.connect(url).cookies(request.getCookies()).method(Connection.Method.GET).execute();
 		}else {
-			uc=(HttpURLConnection) url.openConnection();
+			res = Jsoup.connect(url).method(Connection.Method.GET).execute();
 		}
-		uc.setRequestProperty("User-Agent", Constants.USER_AGENT);
-		uc.setRequestProperty("Content-Language", "en-US");
-		uc.setRequestMethod(request.getHttpMethod().name());
-		if(request.getCookie()!=null && !request.getCookie().isEmpty()) {
-			uc.setRequestProperty("Cookie", request.getCookie().stream().collect(Collectors.joining(",")));
-		}
-		uc.connect();
-		InputStream is = null;
 		
-		is = new BufferedInputStream(uc.getInputStream());
-		BufferedReader responseBr = new BufferedReader(new InputStreamReader(is));
-		String inputLine = "";
-		StringBuilder sb = new StringBuilder();
-		while ((inputLine = responseBr.readLine()) != null) {
-            sb.append(inputLine);
-        }
-		responseBr.close();
-		response.setHttpStatus(uc.getResponseMessage());
-		response.setHttpStatusCode(uc.getResponseCode());
-		Map<String, List<String>> map = uc.getHeaderFields();
-		for (Map.Entry<String, List<String>> entry : map.entrySet())
-		{
-		    if ("Set-Cookie".equals(entry.getKey())) {
-		    	List<String> headerValues = entry.getValue();
-		    	response.setCookies(headerValues);
-		    }
-		}
-		response.setBody(sb.toString());
+		response.setBody(res.body());
+		response.setCookies(res.cookies());
+		response.setHttpStatus(res.statusMessage());
+		response.setHttpStatusCode(res.statusCode());
 		if(Log.isDebugEnabled()) {
-			Log.debug(sb.toString());
+			Log.debug("Cookies:::"+res.cookies());
+			Log.debug("BodyResponse:::"+res.body());
 		}
 		return response;
 	}
 	
 	public HttpResponse post(HttpRequest request) throws IOException {
-		URL url = new URL("https://"+request.getHost()+"/"+request.getPath());
+		String url = "https://"+request.getHost()+request.getPath();
 		HttpResponse response = new HttpResponse();
-		HttpURLConnection uc=null;
-		String param=null;
+		Connection.Response res=null;
 		if(proxyProp.isEnable()) {
-			Proxy proxy = new Proxy(                                      
-			        Proxy.Type.HTTP,                                     
-			        InetSocketAddress.createUnresolved(proxyProp.getHost(), proxyProp.getPort())
-			);
-			uc= (HttpURLConnection)url.openConnection(proxy);
+			System.setProperty("http.proxyHost", proxyProp.getHost());
+			System.setProperty("http.proxyPort", proxyProp.getPort());
+		}
+		if(request.getCookies()!=null && !request.getCookies().isEmpty()) {
+			res = Jsoup.connect(url).cookies(request.getCookies()).data(request.getData()).method(Connection.Method.POST).execute();
 		}else {
-			uc=(HttpURLConnection) url.openConnection();
-		}
-		uc.setRequestProperty("User-Agent", Constants.USER_AGENT);
-		uc.setRequestProperty("Content-Language", "en-US,en;q=0.9");
-		uc.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-		uc.setRequestMethod(request.getHttpMethod().name());
-		String cookies = null;
-		if(request.getCookie()!=null && !request.getCookie().isEmpty()) {
-			cookies=request.getCookie().stream().findFirst().get();
-			uc.setRequestProperty("cookie", cookies);
-		}
-		if(request.getData()!=null && !request.getData().isEmpty()) {
-			uc.setDoOutput(true);
-			uc.setDoInput(true);
-			param = URLEncoder.encode(request.getData().entrySet().stream().map(e->e.getKey()+"="+e.getValue()).collect(Collectors.joining("&")), "UTF-8");
-			uc.setRequestProperty("content-length", String.valueOf(param.length()));
+			res = Jsoup.connect(url).data(request.getData()).method(Connection.Method.POST).execute();
 		}
 		
-		uc.setRequestProperty("cache-control", "max-age=0");
-		uc.setRequestProperty("upgrade-insecure-requests", "1");
-		uc.setRequestProperty("referer", "https://"+request.getHost()+"/");
-		uc.setRequestProperty("origin", "https://"+request.getHost()+"/");
-		
-		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(uc.getOutputStream());
-        outputStreamWriter.write(param);
-        outputStreamWriter.flush();
-		BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-		String inputLine;
-		StringBuilder sb = new StringBuilder();
-		while ((inputLine = in.readLine()) != null) {
-            sb.append(inputLine);
-        }
-		in.close();
-		response.setHttpStatus(uc.getResponseMessage());
-		response.setHttpStatusCode(uc.getResponseCode());
-		Map<String, List<String>> map = uc.getHeaderFields();
-		for (Map.Entry<String, List<String>> entry : map.entrySet())
-		{
-		    if ("Set-Cookie".equals(entry.getKey())) {
-		    	List<String> headerValues = entry.getValue();
-		    	response.setCookies(headerValues);
-		    }
-		}
-		response.setBody(sb.toString());
+		response.setBody(res.body());
+		response.setCookies(res.cookies());
+		response.setHttpStatus(res.statusMessage());
+		response.setHttpStatusCode(res.statusCode());
 		if(Log.isDebugEnabled()) {
-			Log.debug(sb.toString());
+			Log.debug("Cookies:::"+res.cookies());
+			Log.debug("BodyResponse:::"+res.body());
 		}
 		return response;
 	}

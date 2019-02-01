@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.1.2.RELEASE'
+		springBootVersion = '2.1.0.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -24,7 +24,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', 'Greenwich.RELEASE')
+	set('springCloudVersion', 'Greenwich.M1')
 }
 
 configurations.all {

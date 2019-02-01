@@ -1,6 +1,6 @@
 package com.travian.account.response;
 
-import java.util.List;
+import java.util.Map;
 
 import lombok.Data;
 import lombok.ToString;
@@ -12,7 +12,7 @@ public class HttpResponse {
 	private String body;
 	private int httpStatusCode;
 	private String httpStatus;
-	private List<String> cookies;
+	private Map<String, String> cookies;
 	
 
 }

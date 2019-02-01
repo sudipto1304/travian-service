@@ -1,8 +1,7 @@
 package com.travian.account.response;
 
-import java.util.List;
+import java.util.Map;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import lombok.Data;
@@ -17,7 +16,7 @@ public class HomeResponse {
 	private String login;
 	private String w;
 	private String sVal;
-	private List<String> cookies;
+	private Map<String, String> cookies;
 
 }
  

@@ -1,7 +1,5 @@
 package com.travian.account.service;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,13 +30,13 @@ public class AccountInfoService {
 	
 	public AccountInfoResponse getAccountInfo(AccountInfoRequest request) throws IOException {
 		AccountInfoResponse response = new AccountInfoResponse();
-		HomeResponse home = getHome(request);
+		HomeResponse home = getHomeResponse(request);
 		HttpRequest loginRequest = new HttpRequest();
-		loginRequest.setCookie(home.getCookies());
+		loginRequest.setCookies(home.getCookies());
 		loginRequest.setHttpMethod(HttpMethod.POST);
 		loginRequest.setHost(request.getServerUri());
-		loginRequest.setPath("dorf1.php");
-		Map<String, Object> postData = new HashMap<String, Object>();
+		loginRequest.setPath("/dorf1.php");
+		Map<String, String> postData = new HashMap<String, String>();
 		postData.put("s1", home.getSVal());
 		postData.put("w", home.getW());
 		postData.put("login", home.getLogin());
@@ -49,7 +47,7 @@ public class AccountInfoService {
 		return response;
 	}
 	
-	private HomeResponse getHome(AccountInfoRequest request) throws IOException {
+	private HomeResponse getHomeResponse(AccountInfoRequest request) throws IOException {
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.setHttpMethod(HttpMethod.GET);
 		httpRequest.setHost(request.getServerUri());
