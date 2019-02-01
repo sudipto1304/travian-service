@@ -1,11 +1,15 @@
 package com.travian.account.service;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +33,7 @@ public class AccountInfoService {
 	
 	
 	public AccountInfoResponse getAccountInfo(AccountInfoRequest request) throws IOException {
-		AccountInfoResponse response = new AccountInfoResponse();
+		
 		HomeResponse home = getHomeResponse(request);
 		HttpRequest loginRequest = new HttpRequest();
 		loginRequest.setCookies(home.getCookies());
@@ -44,7 +48,7 @@ public class AccountInfoService {
 		postData.put("password", request.getPassword());
 		loginRequest.setData(postData);
 		HttpResponse loginResponse = httpService.post(loginRequest);
-		return response;
+		return parseAccountResponse(loginResponse);
 	}
 	
 	private HomeResponse getHomeResponse(AccountInfoRequest request) throws IOException {
@@ -61,6 +65,14 @@ public class AccountInfoService {
 		homeResponse.setSVal("Login");
 		homeResponse.setW("1366:768");
 		return homeResponse;
+	}
+	
+	private AccountInfoResponse parseAccountResponse(HttpResponse loginResponse) {
+		AccountInfoResponse response = new AccountInfoResponse();
+		Document doc = Jsoup.parse(loginResponse.getBody());
+		Elements userInfoElm = doc.select("div.playerName > img");
+		String tribe = userInfoElm.attr("alt");
+		return response;
 	}
 
 }

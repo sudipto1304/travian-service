@@ -5,9 +5,10 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class AccountInfoResponse {
+public class UserInfo {
 	
-	private UserInfo user;
-	
+	private String userName;
+	private String tribe;
+	private String link;
 
 }
