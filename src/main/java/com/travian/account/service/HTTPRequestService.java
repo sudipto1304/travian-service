@@ -1,20 +1,10 @@
 package com.travian.account.service;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -25,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.travian.account.config.ProxyProperties;
 import com.travian.account.request.HttpRequest;
 import com.travian.account.response.HttpResponse;
-import com.travian.account.util.Constants;
 
 @Service
 public class HTTPRequestService {
@@ -37,6 +26,9 @@ public class HTTPRequestService {
 
 	public HttpResponse get(HttpRequest request) throws IOException {
 		String url = "https://" + request.getHost();
+		if(request.getPath()!=null) {
+			url=url+request.getPath();
+		}
 		HttpResponse response = new HttpResponse();
 		Connection.Response res = null;
 		if (proxyProp.isEnable()) {
@@ -58,13 +50,13 @@ public class HTTPRequestService {
 			}
 		}
 
-		response.setBody(res.body());
+		response.setBody(StringEscapeUtils.unescapeHtml4(res.body()));
 		response.setCookies(res.cookies());
 		response.setHttpStatus(res.statusMessage());
 		response.setHttpStatusCode(res.statusCode());
 		if (Log.isDebugEnabled()) {
 			Log.debug("Cookies:::" + res.cookies());
-			Log.debug("BodyResponse:::" + res.body());
+			Log.debug("BodyResponse:::" + response.getBody());
 		}
 		return response;
 	}
@@ -93,13 +85,13 @@ public class HTTPRequestService {
 			}
 		}
 
-		response.setBody(res.body());
+		response.setBody(StringEscapeUtils.unescapeHtml4(res.body()));
 		response.setCookies(res.cookies());
 		response.setHttpStatus(res.statusMessage());
 		response.setHttpStatusCode(res.statusCode());
 		if (Log.isDebugEnabled()) {
 			Log.debug("Cookies:::" + res.cookies());
-			Log.debug("BodyResponse:::" + res.body());
+			Log.debug("BodyResponse:::" + response.getBody());
 		}
 		return response;
 	}

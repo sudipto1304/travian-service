@@ -1,5 +1,6 @@
 package com.travian.account.request;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.springframework.http.HttpMethod;
@@ -7,7 +8,7 @@ import org.springframework.http.HttpMethod;
 import lombok.Data;
 
 @Data
-public class HttpRequest {
+public class HttpRequest implements Serializable{
 	
 	private String path;
 	private String host;

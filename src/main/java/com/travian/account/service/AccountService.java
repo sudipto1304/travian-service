@@ -1,9 +1,9 @@
 package com.travian.account.service;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jsoup.Jsoup;
@@ -18,23 +18,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.travian.account.request.AccountInfoRequest;
+import com.travian.account.request.AccountInfoWL;
 import com.travian.account.request.HttpRequest;
 import com.travian.account.response.AccountInfoResponse;
 import com.travian.account.response.HomeResponse;
 import com.travian.account.response.HttpResponse;
 import com.travian.account.response.UserInfo;
+import com.travian.account.response.Village;
+import com.travian.account.util.AccountUtil;
 
 @Service
-public class AccountInfoService {
-	
-	private static final Logger Log = LoggerFactory.getLogger(AccountInfoService.class);
-	
+public class AccountService {
+
+	private static final Logger Log = LoggerFactory.getLogger(AccountService.class);
+
 	@Autowired
 	private HTTPRequestService httpService;
-	
-	
+
 	public AccountInfoResponse getAccountInfo(AccountInfoRequest request) throws IOException {
-		
 		HomeResponse home = getHomeResponse(request);
 		HttpRequest loginRequest = new HttpRequest();
 		loginRequest.setCookies(home.getCookies());
@@ -49,9 +50,22 @@ public class AccountInfoService {
 		postData.put("password", request.getPassword());
 		loginRequest.setData(postData);
 		HttpResponse loginResponse = httpService.post(loginRequest);
-		return parseAccountResponse(loginResponse);
+		loginResponse.getCookies().putAll(home.getCookies());
+		return AccountUtil.parseAccountResponse(loginResponse);
 	}
-	
+
+	public AccountInfoResponse getAccountInfoWL(AccountInfoWL request) throws IOException {
+		HttpRequest httpRequest = new HttpRequest();
+		httpRequest.setHttpMethod(HttpMethod.GET);
+		httpRequest.setHost(request.getServerUri());
+		httpRequest.setPath("/dorf1.php");
+		httpRequest.setCookies(request.getCookies());
+		HttpResponse homeResponse = httpService.get(httpRequest);
+		AccountInfoResponse response =  AccountUtil.parseAccountResponse(homeResponse);
+		response.setCookies(request.getCookies());
+		return response;
+	}
+
 	private HomeResponse getHomeResponse(AccountInfoRequest request) throws IOException {
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.setHttpMethod(HttpMethod.GET);
@@ -67,17 +81,7 @@ public class AccountInfoService {
 		homeResponse.setW("1366:768");
 		return homeResponse;
 	}
+
 	
-	private AccountInfoResponse parseAccountResponse(HttpResponse loginResponse) {
-		AccountInfoResponse response = new AccountInfoResponse();
-		UserInfo user = new UserInfo();
-		Document doc = Jsoup.parse(loginResponse.getBody());
-		Elements userInfoElement = doc.select("div.playerName > a");
-		user.setTribe(userInfoElement.get(0).getElementsByClass("nation").attr("title"));
-		user.setLink("/"+userInfoElement.get(1).attr("href"));
-		user.setUserName(userInfoElement.get(1).text());
-		response.setUser(user);
-		return response;
-	}
 
 }
