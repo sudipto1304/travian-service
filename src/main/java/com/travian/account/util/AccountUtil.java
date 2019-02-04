@@ -31,12 +31,12 @@ public class AccountUtil {
 			Village village = new Village();
 			if(elm.select("a").hasClass("active")) {
 				village.setActive(true);
-				village.setLoyalty(Integer.valueOf(doc.select("div.loyalty > span").text().replaceAll("%", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "")));
+				village.setLoyalty(Integer.valueOf(doc.select("div.loyalty > span").text().replaceAll("%", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll(",", "")));
 			}
 			village.setLink(elm.select("a").attr("href"));
 			village.setVillageName(elm.select("a > div.name").text());
-			String y = elm.select("a > span.coordinates > span.coordinateY").text().replace(")", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-");
-			String x = elm.select("a > span.coordinates > span.coordinateX").text().replace("(", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-");
+			String y = elm.select("a > span.coordinates > span.coordinateY").text().replace(")", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-").replaceAll(",", "");
+			String x = elm.select("a > span.coordinates > span.coordinateX").text().replace("(", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-").replaceAll(",", "");
 			village.setY(Integer.valueOf(y));
 			village.setX(Integer.valueOf(x));
 			
@@ -49,8 +49,8 @@ public class AccountUtil {
 		String temp = doc.select("div.heroHealthBarBox > div.bar").attr("style");
 		temp = temp.substring(temp.indexOf(":")+1, temp.indexOf("%"));
 		response.setHeroHealth(Integer.valueOf(temp));
-		response.setSilver(Integer.valueOf(doc.select("span.ajaxReplaceableSilverAmount").text()));
-		response.setGold(Integer.valueOf(doc.select("span.ajaxReplaceableGoldAmount").text()));
+		response.setSilver(Integer.valueOf(doc.select("span.ajaxReplaceableSilverAmount").text().replaceAll(",", "")));
+		response.setGold(Integer.valueOf(doc.select("span.ajaxReplaceableGoldAmount").text().replaceAll(",", "")));
 		response.setAlliance(doc.select("div#sidebarBoxAllianceNoNews > div.sidebarBoxInnerBox > div.innerBox > div.boxTitle").text());
 		response.setHeroStatus(doc.select("div.heroStatusMessage").text());
 		return response;

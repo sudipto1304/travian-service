@@ -39,7 +39,9 @@ public class VillageService {
 			resourceRequest.setHttpMethod(HttpMethod.GET);
 			resourceRequest.setPath("/dorf1.php"+link);
 			HttpResponse resourceResponse = httpService.get(resourceRequest);
-			VillageUtil.parseResource(resourceResponse);
+			village.setLink(link);
+			village.setResource(VillageUtil.parseResource(resourceResponse));
+			VillageUtil.parseCommonAttributes(resourceResponse, village);
 			return village;
 		} catch (Exception e) {
 			Log.error("", e);

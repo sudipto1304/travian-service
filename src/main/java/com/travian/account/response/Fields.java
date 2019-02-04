@@ -14,6 +14,7 @@ public class Fields {
 	private int nextLevelIron;
 	private int nextLevelCrop;
 	private int id;
+	private String link;
 	
 
 }
