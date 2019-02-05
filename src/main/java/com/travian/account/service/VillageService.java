@@ -50,6 +50,7 @@ public class VillageService {
 			buildingRequest.setPath("/dorf2.php"+link);
 			HttpResponse buildingResponse = httpService.get(buildingRequest);
 			VillageUtil.parseBuildingResponse(buildingResponse, village);
+			VillageUtil.parseVillageTroops(resourceResponse, village);
 			return village;
 		} catch (Exception e) {
 			Log.error("", e);

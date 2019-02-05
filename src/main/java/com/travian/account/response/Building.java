@@ -12,17 +12,17 @@ import lombok.ToString;
 @Data
 @ToString
 @JsonInclude(Include.NON_NULL)
-public class Village implements Serializable{
+public class Building implements Serializable{
 	
+	private String buildingName;
+	private int buildingLevel;
+	private int id;
 	private String link;
-	private String villageName;
-	private int x;
-	private int ongoingConstruction;
-	private int y;
-	private int loyalty;
-	private boolean isActive=false;
-	private Resource resource;
-	private List<Building> buildings;
-	private List<VillageTroop> villageTroops;
+	private int nextLevelWood;
+	private int nextLevelClay;
+	private int nextLevelIron;
+	private int nextLevelCrop;
+	private boolean isUpgradable=false;
+	private boolean isUpgrading=false;
 
 }

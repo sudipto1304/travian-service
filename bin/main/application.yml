@@ -12,7 +12,7 @@ logging:
   level:
     root: WARN
     com:
-      travian: DEBUG
+      travian: INFO
     org:
       springframework:
         security: DEBUG

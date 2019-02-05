@@ -3,6 +3,7 @@ package com.travian.account.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,11 +13,12 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.travian.account.response.Building;
 import com.travian.account.response.Fields;
 import com.travian.account.response.HttpResponse;
 import com.travian.account.response.Resource;
 import com.travian.account.response.Village;
-import com.travian.account.service.VillageService;
+import com.travian.account.response.VillageTroop;
 
 public class VillageUtil {
 	
@@ -52,7 +54,7 @@ public class VillageUtil {
 		resource.setIron(Integer.valueOf(doc.select("span#l3").text().replace(")", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-").replaceAll(",", "")));
 		resource.setCrop(Integer.valueOf(doc.select("span#l4").text().replace(")", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-").replaceAll(",", "")));
 		resource.setCropUsage(Integer.valueOf(doc.select("span#stockBarFreeCrop").text().replace(")", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-").replaceAll(",", "")));
-		Elements tdElms = doc.select("td.num");
+		Elements tdElms = doc.select("table#production > tbody > tr > td.num");
 		int index=0;
 		for(Element tdElm : tdElms) {
 			if(index==0)
@@ -65,7 +67,7 @@ public class VillageUtil {
 				resource.setCropProduction(Integer.valueOf(tdElm.text().trim().replace(")", "").replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-").replaceAll(",", "")));
 			index++;
 		}
-		
+		village.setOngoingConstruction(doc.select("div.buildDuration").size());
 		
 		village.setResource(resource);
 	}
@@ -119,11 +121,60 @@ public class VillageUtil {
 	}
 
 	
-	public static void parseBuildingResponse(HttpResponse response, Village village) {
+	public static void parseBuildingResponse(HttpResponse response, final Village village) {
 		String buildingElementStr = Jsoup.parse(response.getBody()).select("div#village_map").html();
 		buildingElementStr = buildingElementStr.replaceAll("&gt;", "</div>").replaceAll("<span class=\" level\">", "").replaceAll(":", "\"").replaceAll("<br>", ">");
 		Elements buildingElm = Jsoup.parse(buildingElementStr).select("div.colorLayer");
-		if(Log.isDebugEnabled())
-			Log.debug("resourceElements::"+buildingElementStr);
+		List<Building> buildings = new ArrayList<Building>();
+		buildingElm.forEach(e->{
+			Building building  = new Building();
+			String levelStr = e.select("div.colorLayer").text();
+			String titleStr = e.select("div.colorLayer").attr("title");
+			if(StringUtils.isNoneEmpty(titleStr)) {
+				String level = titleStr.substring(titleStr.indexOf("Level")+6, titleStr.indexOf("||"));
+				String[] resources = levelStr.split(" ");
+				if(!titleStr.contains("Completely upgraded")) {
+					if(levelStr.contains("Currently upgrading")) {
+						building.setUpgrading(true);
+						if(!levelStr.contains("Construction of maximum possible building")) {
+							building.setNextLevelWood(Integer.valueOf(resources[resources.length-5]));
+							building.setNextLevelClay(Integer.valueOf(resources[resources.length-4]));
+							building.setNextLevelIron(Integer.valueOf(resources[resources.length-3]));
+							building.setNextLevelCrop(Integer.valueOf(resources[resources.length-2]));
+							building.setUpgradable(true);
+						}
+					}else {
+						building.setNextLevelWood(Integer.valueOf(resources[resources.length-5]));
+						building.setNextLevelClay(Integer.valueOf(resources[resources.length-4]));
+						building.setNextLevelIron(Integer.valueOf(resources[resources.length-3]));
+						building.setNextLevelCrop(Integer.valueOf(resources[resources.length-2]));
+						building.setUpgradable(true);
+					}
+				}
+				building.setBuildingName(titleStr.substring(0, titleStr.indexOf("Level")).trim());
+				building.setBuildingLevel(Integer.valueOf(level));
+				building.setLink(e.select("div.colorLayer").attr("onclick").replaceAll("window.location.href=", "").replaceAll("\'", ""));
+				String id = building.getLink().replace("build.php?id=", "");
+				building.setId(Integer.valueOf(id));
+				buildings.add(building);
+			}
+			if(Log.isDebugEnabled())
+				Log.debug(titleStr+"::::"+levelStr);
+		});
+		village.setBuildings(buildings);
+	}
+	
+	public static void parseVillageTroops(HttpResponse response, final Village village) {
+		Document doc = Jsoup.parse(response.getBody());
+		List<VillageTroop> villageTroops  = new ArrayList<VillageTroop>();
+		Elements troopCountElms = doc.select("table#troops > tbody > tr > td.num");
+		Elements troopTypeElms = doc.select("table#troops > tbody > tr > td.un");
+		for(int i=0; i<troopCountElms.size(); i++ ) {
+			VillageTroop troop = new VillageTroop();
+			troop.setTroopType(troopTypeElms.get(i).text());
+			troop.setTroopCount(Integer.valueOf(troopCountElms.get(i).text()));
+			villageTroops.add(troop);
+		}
+		village.setVillageTroops(villageTroops);
 	}
 }

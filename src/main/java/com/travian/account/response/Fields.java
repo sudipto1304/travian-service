@@ -15,6 +15,7 @@ public class Fields {
 	private int nextLevelCrop;
 	private int id;
 	private String link;
+	private boolean isUpgradable;
 	
 
 }
