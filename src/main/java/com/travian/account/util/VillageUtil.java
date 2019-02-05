@@ -9,17 +9,23 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.travian.account.response.Fields;
 import com.travian.account.response.HttpResponse;
 import com.travian.account.response.Resource;
 import com.travian.account.response.Village;
+import com.travian.account.service.VillageService;
 
 public class VillageUtil {
 	
+	private static final Logger Log = LoggerFactory.getLogger(VillageUtil.class);
+	
+	
 	private static boolean isSameField = false;
 
-	public static Resource parseResource(HttpResponse response) {
+	public static void parseResource(HttpResponse response, Village village) {
 		Resource resource = new Resource();
 		Document doc = Jsoup.parse(response.getBody());
 		String resourceElementsStr = doc.select("map#rx").html();
@@ -61,9 +67,7 @@ public class VillageUtil {
 		}
 		
 		
-
-		
-		return resource;
+		village.setResource(resource);
 	}
 
 	private static Fields getFieldInfo(Node node, Fields field) {
@@ -114,4 +118,12 @@ public class VillageUtil {
 		
 	}
 
+	
+	public static void parseBuildingResponse(HttpResponse response, Village village) {
+		String buildingElementStr = Jsoup.parse(response.getBody()).select("div#village_map").html();
+		buildingElementStr = buildingElementStr.replaceAll("&gt;", "</div>").replaceAll("<span class=\" level\">", "").replaceAll(":", "\"").replaceAll("<br>", ">");
+		Elements buildingElm = Jsoup.parse(buildingElementStr).select("div.colorLayer");
+		if(Log.isDebugEnabled())
+			Log.debug("resourceElements::"+buildingElementStr);
+	}
 }

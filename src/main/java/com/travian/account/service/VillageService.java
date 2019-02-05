@@ -40,8 +40,16 @@ public class VillageService {
 			resourceRequest.setPath("/dorf1.php"+link);
 			HttpResponse resourceResponse = httpService.get(resourceRequest);
 			village.setLink(link);
-			village.setResource(VillageUtil.parseResource(resourceResponse));
+			VillageUtil.parseResource(resourceResponse, village);
 			VillageUtil.parseCommonAttributes(resourceResponse, village);
+			
+			HttpRequest buildingRequest  = new HttpRequest();
+			buildingRequest.setCookies(cookies);
+			buildingRequest.setHost(host);
+			buildingRequest.setHttpMethod(HttpMethod.GET);
+			buildingRequest.setPath("/dorf2.php"+link);
+			HttpResponse buildingResponse = httpService.get(buildingRequest);
+			VillageUtil.parseBuildingResponse(buildingResponse, village);
 			return village;
 		} catch (Exception e) {
 			Log.error("", e);
