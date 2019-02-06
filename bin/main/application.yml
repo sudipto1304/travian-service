@@ -2,7 +2,7 @@ server:
   port: 4501
 spring:
   application:
-    name: travian-accountinfo
+    name: travian-service
 internet:
   proxy:
     enable: true
