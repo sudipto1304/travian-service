@@ -2,17 +2,17 @@ server:
   port: 4501
 spring:
   application:
-    name: travian-accountinfo
+    name: travian-service
 internet:
   proxy:
-    enable: false
+    enable: true
     host: east.network.fedex.com
     port: 3128
 logging:
   level:
     root: WARN
     com:
-      travian: DEBUG
+      travian: INFO
     org:
       springframework:
         security: DEBUG
