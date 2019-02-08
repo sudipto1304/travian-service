@@ -2,6 +2,7 @@ package com.travian.provider.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -60,7 +61,28 @@ public class AccountUtil {
 	
 	
 	public static List<Adventure> parseAdventure(HttpResponse adventureResponse){
-		
+		List<Adventure> adventures = new ArrayList<>();
+		Document doc = Jsoup.parse(adventureResponse.getBody());
+		Elements elm = doc.select("form#adventureListForm > table > tbody > tr");
+		elm.forEach(e->{
+			if(StringUtils.isEmpty(e.select("td.noData").text())) {
+				Adventure adventure = new Adventure();
+				adventure.setPlace(e.select("td.location").text().trim());
+				String coordinates = e.select("td.coords").text();
+				coordinates = coordinates.replace("(", "").replace(")", "");
+				String[] q = coordinates.split(Pattern.quote("|"), 0);
+				adventure.setTimeRequired(e.select("td.moveTime").text().trim());
+				adventure.setType(e.select("td.difficulty > img").attr("alt"));
+				adventure.setRemainingTime(e.select("td.timeLeft > span").text().trim());
+				adventure.setLink(e.select("td.goTo > a").attr("href"));
+				adventure.setX(Integer.valueOf(q[0].replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-")));
+				adventure.setY(Integer.valueOf(q[1].replaceAll("\\u202C", "").replaceAll("\\u202D", "").replaceAll("\\u2212", "-")));
+				adventures.add(adventure);
+			}
+			
+			
+		});
+		return adventures;
 	}
 
 }

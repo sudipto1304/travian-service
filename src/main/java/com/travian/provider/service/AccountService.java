@@ -82,10 +82,10 @@ public class AccountService {
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.setHttpMethod(HttpMethod.GET);
 		httpRequest.setHost(request.getServerUri());
-		httpRequest.setPath("/hero.php");
+		httpRequest.setPath("/hero.php?t=3");
 		httpRequest.setCookies(request.getCookies());
 		HttpResponse adventure = httpService.get(httpRequest);
-		
+		return AccountUtil.parseAdventure(adventure);
 	}
 
 	
