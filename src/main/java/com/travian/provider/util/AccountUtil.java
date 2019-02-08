@@ -3,12 +3,14 @@ package com.travian.provider.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.travian.provider.response.AccountInfoResponse;
+import com.travian.provider.response.Adventure;
 import com.travian.provider.response.HttpResponse;
 import com.travian.provider.response.UserInfo;
 import com.travian.provider.response.Village;
@@ -43,7 +45,7 @@ public class AccountUtil {
 			villages.add(village);
 		}
 		response.setVillages(villages);
-		if(doc.select("button.adventureWhite > div.speechBubbleContainer > div.speechBubbleContent")!=null)
+		if(doc.select("button.adventureWhite > div.speechBubbleContainer > div.speechBubbleContent")!=null && StringUtils.isNotEmpty(doc.select("button.adventureWhite > div.speechBubbleContainer > div.speechBubbleContent").text()))
 			response.setPendingAdventure(Integer.valueOf(doc.select("button.adventureWhite > div.speechBubbleContainer > div.speechBubbleContent").text()));
 		
 		String temp = doc.select("div.heroHealthBarBox > div.bar").attr("style");
@@ -54,6 +56,11 @@ public class AccountUtil {
 		response.setAlliance(doc.select("div#sidebarBoxAllianceNoNews > div.sidebarBoxInnerBox > div.innerBox > div.boxTitle").text());
 		response.setHeroStatus(doc.select("div.heroStatusMessage").text());
 		return response;
+	}
+	
+	
+	public static List<Adventure> parseAdventure(HttpResponse adventureResponse){
+		
 	}
 
 }

@@ -1,15 +1,12 @@
 package com.travian.provider.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +18,9 @@ import com.travian.provider.request.AccountInfoRequest;
 import com.travian.provider.request.AccountInfoWL;
 import com.travian.provider.request.HttpRequest;
 import com.travian.provider.response.AccountInfoResponse;
+import com.travian.provider.response.Adventure;
 import com.travian.provider.response.HomeResponse;
 import com.travian.provider.response.HttpResponse;
-import com.travian.provider.response.UserInfo;
-import com.travian.provider.response.Village;
 import com.travian.provider.util.AccountUtil;
 
 @Service
@@ -80,6 +76,16 @@ public class AccountService {
 		homeResponse.setSVal("Login");
 		homeResponse.setW("1366:768");
 		return homeResponse;
+	}
+	
+	public List<Adventure> getAdventureList(AccountInfoWL request) throws IOException{
+		HttpRequest httpRequest = new HttpRequest();
+		httpRequest.setHttpMethod(HttpMethod.GET);
+		httpRequest.setHost(request.getServerUri());
+		httpRequest.setPath("/hero.php");
+		httpRequest.setCookies(request.getCookies());
+		HttpResponse adventure = httpService.get(httpRequest);
+		
 	}
 
 	
