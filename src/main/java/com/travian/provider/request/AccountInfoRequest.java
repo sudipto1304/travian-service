@@ -7,10 +7,8 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class AccountInfoRequest implements Serializable{
-	private String userId;
+public class AccountInfoRequest extends GameWorld implements Serializable{
 	private String password;
-	private String serverUri;
 	
 
 }

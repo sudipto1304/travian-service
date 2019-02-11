@@ -13,6 +13,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.travian.provider.request.TradeRouteRequest;
 import com.travian.provider.response.Building;
 import com.travian.provider.response.Fields;
 import com.travian.provider.response.HttpResponse;
@@ -176,5 +177,27 @@ public class VillageUtil {
 			villageTroops.add(troop);
 		}
 		village.setVillageTroops(villageTroops);
+	}
+	
+	public static void parseMarketPlaceTradeRoutes(HttpResponse response, final TradeRouteRequest request) {
+		Document doc = Jsoup.parse(response.getBody());
+		Elements hiddenElm = doc.select("input[type=hidden]");
+		hiddenElm.forEach(e->{
+			if("gid".equals(e.attr("name"))) {
+				request.setGid(e.attr("value"));
+			}
+			if("a".equals(e.attr("name"))) {
+				request.setA(e.attr("value"));
+			}
+			if("t".equals(e.attr("name"))) {
+				request.setT(e.attr("value"));
+			}
+			if("trid".equals(e.attr("name"))) {
+				request.setTrid(e.attr("value"));
+			}
+			if("option".equals(e.attr("name"))) {
+				request.setOption(e.attr("value"));
+			}
+		});
 	}
 }

@@ -1,11 +1,13 @@
 package com.travian.provider.response;
 
+import java.io.Serializable;
+
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
-public class Fields {
+public class Fields implements Serializable{
 	
 	private String type;
 	private int level;

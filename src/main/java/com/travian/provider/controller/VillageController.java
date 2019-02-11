@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.travian.provider.request.TradeRouteRequest;
 import com.travian.provider.request.VillageInfoRequest;
 import com.travian.provider.response.AccountInfoResponse;
+import com.travian.provider.response.Status;
 import com.travian.provider.response.Village;
 import com.travian.provider.service.VillageService;
 
@@ -41,12 +43,28 @@ public class VillageController {
             @ApiResponse(code = 412, message = "Precondition Failed"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-	@RequestMapping(value="/getInfo", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/getInfo", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Village>> getAccountInfo(@RequestBody VillageInfoRequest request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
 		if(Log.isDebugEnabled())
 			Log.debug("AccoiuntInfo Request::"+request);
 		List<Village> response = service.getVillagesInfo(request);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
+	
+	
+	@ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Created", response = AccountInfoResponse.class),
+            @ApiResponse(code = 412, message = "Precondition Failed"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+	@RequestMapping(value="/createTradeRoutes", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Status> createTradeRoute(@RequestBody TradeRouteRequest request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
+		if(Log.isDebugEnabled())
+			Log.debug("AccoiuntInfo Request::"+request);
+		Status status = service.createTradeRoutes(request);
+		return new ResponseEntity<>(status, HttpStatus.CREATED);
+	}
+	
+	
 
 }

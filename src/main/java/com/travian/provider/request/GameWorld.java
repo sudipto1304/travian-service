@@ -6,13 +6,14 @@ import java.util.Map;
 import lombok.Data;
 import lombok.ToString;
 
+
 @Data
 @ToString
-public class AccountInfoWL implements Serializable{
+public class GameWorld implements Serializable{
 	
+	private String host;
+	private String path;
 	private String userId;
 	private Map<String, String> cookies;
-	private String serverUri;
-	private String path;
 
 }

@@ -1,11 +1,13 @@
 package com.travian.provider.response;
 
+import java.io.Serializable;
+
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
-public class Adventure {
+public class Adventure implements Serializable{
 	
 	private String link;
 	private String remainingTime;

@@ -9,11 +9,9 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class VillageInfoRequest implements Serializable{
+public class VillageInfoRequest extends GameWorld implements Serializable{
 	
 	private Map<String, String> cookies;
 	private List<String> link;
-	private String host;
-	private String userId;
 
 }

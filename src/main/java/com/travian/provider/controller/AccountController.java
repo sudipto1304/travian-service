@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.travian.provider.request.AccountInfoRequest;
-import com.travian.provider.request.AccountInfoWL;
+import com.travian.provider.request.GameWorld;
+import com.travian.provider.request.InitiateAdventureRequest;
 import com.travian.provider.response.AccountInfoResponse;
 import com.travian.provider.response.Adventure;
+import com.travian.provider.response.Status;
 import com.travian.provider.service.AccountService;
 
 import io.swagger.annotations.ApiResponse;
@@ -56,8 +58,8 @@ public class AccountController {
             @ApiResponse(code = 412, message = "Precondition Failed"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-	@RequestMapping(value="/getInfo", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<AccountInfoResponse> getAccountInfo(@RequestBody AccountInfoWL request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
+	@RequestMapping(value="/getInfoOnly", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<AccountInfoResponse> getAccountInfo(@RequestBody GameWorld request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
 		if(Log.isDebugEnabled())
 			Log.debug("AccoiuntInfo Request::"+request);
 		AccountInfoResponse response = service.getAccountInfoWL(request);
@@ -69,12 +71,25 @@ public class AccountController {
             @ApiResponse(code = 412, message = "Precondition Failed"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-	@RequestMapping(value="/getAdventureList", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Adventure>> getAdventureList(@RequestBody AccountInfoWL request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
+	@RequestMapping(value="/getAdventureList", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Adventure>> getAdventureList(@RequestBody GameWorld request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
 		if(Log.isDebugEnabled())
 			Log.debug("AccoiuntInfo Request::"+request);
 		List<Adventure> adventures = service.getAdventureList(request);
 		return new ResponseEntity<>(adventures, HttpStatus.CREATED);
+	}
+	
+	@ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Created", response = AccountInfoResponse.class),
+            @ApiResponse(code = 412, message = "Precondition Failed"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+	@RequestMapping(value="/hero/sendToAdventure", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Status> initiateAdventure(@RequestBody InitiateAdventureRequest request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
+		if(Log.isDebugEnabled())
+			Log.debug("AccoiuntInfo Request::"+request);
+		Status status = service.initiateAdventure(request);
+		return new ResponseEntity<>(status, HttpStatus.CREATED);
 	}
 
 
