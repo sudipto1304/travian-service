@@ -65,7 +65,7 @@ public class VillageService {
 		HttpRequest marketPlaceRequest = new HttpRequest();
 		marketPlaceRequest.setCookies(request.getCookies());
 		marketPlaceRequest.setHost(request.getHost());
-		marketPlaceRequest.setPath("/dorf2.php?newid="+request.getSourceVillage()+"&");
+		marketPlaceRequest.setPath("/dorf2.php?newdid="+request.getSourceVillage()+"&");
 		marketPlaceRequest.setHttpMethod(HttpMethod.GET);
 		HttpResponse marketPlaceResponse = httpService.get(marketPlaceRequest);
 		if(Log.isDebugEnabled())

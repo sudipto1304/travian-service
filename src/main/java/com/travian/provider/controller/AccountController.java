@@ -67,7 +67,7 @@ public class AccountController {
 	}
 	
 	@ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = AccountInfoResponse.class),
+            @ApiResponse(code = 201, message = "Created", response = List.class),
             @ApiResponse(code = 412, message = "Precondition Failed"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
@@ -80,7 +80,7 @@ public class AccountController {
 	}
 	
 	@ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = AccountInfoResponse.class),
+            @ApiResponse(code = 201, message = "Created", response = Status.class),
             @ApiResponse(code = 412, message = "Precondition Failed"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
