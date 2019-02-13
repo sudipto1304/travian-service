@@ -43,6 +43,7 @@ public class VillageService {
 			resourceRequest.setPath("/dorf1.php"+link);
 			HttpResponse resourceResponse = httpService.get(resourceRequest);
 			village.setLink(link);
+			village.setVillageId(link.substring(link.indexOf("=")+1, link.length()-1));
 			VillageUtil.parseResource(resourceResponse, village);
 			VillageUtil.parseCommonAttributes(resourceResponse, village);
 			

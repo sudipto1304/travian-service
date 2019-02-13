@@ -15,6 +15,7 @@ import lombok.ToString;
 public class Village implements Serializable{
 	
 	private String link;
+	private String villageId;
 	private String villageName;
 	private int x;
 	private int ongoingConstruction;

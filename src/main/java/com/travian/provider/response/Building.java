@@ -12,7 +12,7 @@ import lombok.ToString;
 @Data
 @ToString
 @JsonInclude(Include.NON_NULL)
-public class Building implements Serializable{
+public class Building implements Serializable, Comparable{
 	
 	private String buildingName;
 	private int buildingLevel;
@@ -24,5 +24,9 @@ public class Building implements Serializable{
 	private int nextLevelCrop;
 	private boolean isUpgradable=false;
 	private boolean isUpgrading=false;
+	@Override
+	public int compareTo(Object o) {
+		return Integer.valueOf(this.getId()).compareTo(Integer.valueOf(((Building)o).getId()));
+	}
 
 }
