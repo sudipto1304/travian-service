@@ -1,11 +1,11 @@
-server:
-  port: 4501
 spring:
   application:
     name: travian-service
+  jmx:
+    default-domain: travian-service
 internet:
   proxy:
-    enable: true
+    enable: false
     host: east.network.fedex.com
     port: 3128
 logging:
@@ -23,4 +23,5 @@ logging:
           dbcp2: ERROR
   pattern:
     console: '%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n'
-    
+    file: '%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n'
+  file: /usr/local/log/travian-service.log⁩

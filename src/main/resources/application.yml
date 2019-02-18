@@ -1,6 +1,8 @@
 spring:
   application:
     name: travian-service
+  jmx:
+    default-domain: travian-service
 internet:
   proxy:
     enable: false
