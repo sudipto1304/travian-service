@@ -237,4 +237,14 @@ public class VillageUtil {
 			}
 		});
 	}
+	
+	public static List<String> getTradeRoutes(HttpResponse response){
+		Document doc = Jsoup.parse(response.getBody());
+		Elements elms = doc.select("td.sel > a");
+		List<String> routes = new ArrayList<String>();
+		elms.forEach(e->{
+			routes.add(e.attr("href"));
+		});
+		return routes;
+	}
 }

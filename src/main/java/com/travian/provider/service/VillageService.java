@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
+import com.travian.provider.request.DeleteTradeRouteRequest;
 import com.travian.provider.request.HttpRequest;
 import com.travian.provider.request.TradeRouteRequest;
 import com.travian.provider.request.VillageInfoRequest;
@@ -111,5 +112,34 @@ public class VillageService {
 			
 		});
 		return new Status("SUCCESS", 200);	
+	}
+	
+	
+	public Status deleteAllTradeRoutes(DeleteTradeRouteRequest request) throws IOException {
+		List<String> routes = getAllTradeRoutes(request);
+		routes.forEach(e->{
+			HttpRequest delteRoutes = new HttpRequest();
+			delteRoutes.setCookies(request.getCookies());
+			delteRoutes.setHost(request.getHost());
+			delteRoutes.setPath(e);
+			delteRoutes.setHttpMethod(HttpMethod.GET);
+			try {
+				HttpResponse delteRoutesResponse = httpService.get(delteRoutes);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		return new Status("SUCCESS", 200);
+	}
+	
+	public List<String> getAllTradeRoutes(DeleteTradeRouteRequest request) throws IOException{
+		HttpRequest marketPlaceRequest = new HttpRequest();
+		marketPlaceRequest.setCookies(request.getCookies());
+		marketPlaceRequest.setHost(request.getHost());
+		marketPlaceRequest.setPath("/build.php?newdid="+request.getVillageId()+"&gid=17");
+		marketPlaceRequest.setHttpMethod(HttpMethod.GET);
+		HttpResponse marketPlaceResponse = httpService.get(marketPlaceRequest);
+		return VillageUtil.getTradeRoutes(marketPlaceResponse);
 	}
 }
