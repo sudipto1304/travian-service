@@ -90,7 +90,9 @@ public class VillageService {
 			postData.put("r2", request.getClay());
 			postData.put("r3", request.getIron());
 			postData.put("r4", request.getCrop());
-			postData.put("userHour", e);
+			postData.put("hour", e);
+			postData.put("minute", "0");
+			postData.put("trade_route_mode", "send");
 			postData.put("repeat", "1");
 			postData.put("gid", request.getGid());
 			postData.put("a", request.getA());
