@@ -25,5 +25,7 @@ public class Village implements Serializable{
 	private Resource resource;
 	private List<Building> buildings;
 	private List<VillageTroop> villageTroops;
+	private boolean isTownHallPresent;
+	private int thId;
 
 }

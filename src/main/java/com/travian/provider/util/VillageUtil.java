@@ -1,7 +1,9 @@
 package com.travian.provider.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -42,7 +44,7 @@ public class VillageUtil {
 				if (!isSameField) {
 					field = new Fields();
 					getFieldInfo(node, field);
-					if(!field.isUpgradable()) {
+					if (!field.isUpgradable()) {
 						fields.add(field);
 					}
 				} else {
@@ -110,23 +112,23 @@ public class VillageUtil {
 				field.setUpgradable(true);
 				isSameField = true;
 			}
-			
+
 		} else {
-			
-				Elements resourceElements = element.select("div.resourceWrapper > div.resources");
-				for (Element resourceElement : resourceElements) {
-					String resourceId = resourceElement.select("i").attr("class");
-					String resourceAmount = resourceElement.select("span").text();
-					if ("r1".equals(resourceId))
-						field.setNextLevelWood(Integer.valueOf(resourceAmount));
-					if ("r2".equals(resourceId))
-						field.setNextLevelClay(Integer.valueOf(resourceAmount));
-					if ("r3".equals(resourceId))
-						field.setNextLevelIron(Integer.valueOf(resourceAmount));
-					if ("r4".equals(resourceId))
-						field.setNextLevelCrop(Integer.valueOf(resourceAmount));
-				}
-			
+
+			Elements resourceElements = element.select("div.resourceWrapper > div.resources");
+			for (Element resourceElement : resourceElements) {
+				String resourceId = resourceElement.select("i").attr("class");
+				String resourceAmount = resourceElement.select("span").text();
+				if ("r1".equals(resourceId))
+					field.setNextLevelWood(Integer.valueOf(resourceAmount));
+				if ("r2".equals(resourceId))
+					field.setNextLevelClay(Integer.valueOf(resourceAmount));
+				if ("r3".equals(resourceId))
+					field.setNextLevelIron(Integer.valueOf(resourceAmount));
+				if ("r4".equals(resourceId))
+					field.setNextLevelCrop(Integer.valueOf(resourceAmount));
+			}
+
 			isSameField = false;
 		}
 
@@ -194,7 +196,12 @@ public class VillageUtil {
 						.replaceAll("\'", ""));
 				String id = building.getLink().replace("build.php?id=", "");
 				building.setId(Integer.valueOf(id));
+				if ("Town Hall".equals(building.getBuildingName())) {
+					village.setTownHallPresent(true);
+					village.setThId(Integer.valueOf(building.getId()));
+				}
 				buildings.add(building);
+
 			}
 			if (Log.isDebugEnabled())
 				Log.debug(titleStr + "::::" + levelStr);
@@ -237,14 +244,43 @@ public class VillageUtil {
 			}
 		});
 	}
-	
-	public static List<String> getTradeRoutes(HttpResponse response){
+
+	public static List<String> getTradeRoutes(HttpResponse response) {
 		Document doc = Jsoup.parse(response.getBody());
 		Elements elms = doc.select("td.sel > a");
 		List<String> routes = new ArrayList<String>();
-		elms.forEach(e->{
+		elms.forEach(e -> {
 			routes.add(e.attr("href"));
 		});
 		return routes;
+	}
+
+	public static Map<String, Object> parseTHResponse(HttpResponse response) {
+		Map<String, Object> thResponse = new HashMap<>();
+		Document doc = Jsoup.parse(response.getBody());
+		Elements holdButton = doc.select("button");
+		thResponse.put("isCelebrationPossible", false);
+		holdButton.forEach(e -> {
+			if ("Hold".equals(e.attr("value"))) {
+				thResponse.put("isCelebrationPossible", true);
+				String link = e.attr("onclick");
+				link = link.substring(link.indexOf("build"));
+				link = link.substring(0, link.indexOf("'"));
+				if (Log.isInfoEnabled())
+					Log.info("TownHall Celebration Link::" + link);
+				thResponse.put("link", link);
+			}
+		});
+		return thResponse;
+	}
+
+	public static String getFinishTime(HttpResponse response) {
+		Document doc = Jsoup.parse(response.getBody());
+		Elements elements = doc.select("td.dur > span.timer");
+		if (elements.isEmpty()) {
+			return "";
+		} else {
+			return elements.get(0).text();
+		}
 	}
 }

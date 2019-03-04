@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
+import com.travian.provider.request.CelebrationRequest;
 import com.travian.provider.request.DeleteTradeRouteRequest;
 import com.travian.provider.request.HttpRequest;
 import com.travian.provider.request.TradeRouteRequest;
@@ -141,5 +143,33 @@ public class VillageService {
 		marketPlaceRequest.setHttpMethod(HttpMethod.GET);
 		HttpResponse marketPlaceResponse = httpService.get(marketPlaceRequest);
 		return VillageUtil.getTradeRoutes(marketPlaceResponse);
+	}
+	
+	
+	public Status initiateCelebration(CelebrationRequest request) throws IOException {
+		HttpRequest townHallRequest = new HttpRequest();
+		townHallRequest.setCookies(request.getCookies());
+		townHallRequest.setHost(request.getHost());
+		townHallRequest.setPath("/build.php?newdid="+request.getVillageId()+"&id="+request.getThId());
+		townHallRequest.setHttpMethod(HttpMethod.GET);
+		HttpResponse townHallResponse = httpService.get(townHallRequest);
+		Map<String, Object> thResponse = VillageUtil.parseTHResponse(townHallResponse);
+		if((boolean)thResponse.get("isCelebrationPossible")) {
+			HttpRequest celebrationRequest = new HttpRequest();
+			celebrationRequest.setCookies(request.getCookies());
+			celebrationRequest.setHost(request.getHost());
+			celebrationRequest.setPath("/"+(String)thResponse.get("link"));
+			celebrationRequest.setHttpMethod(HttpMethod.GET);
+			HttpResponse celebrationResponse = httpService.get(celebrationRequest);
+			return new Status(VillageUtil.getFinishTime(celebrationResponse), 200);
+		}else {
+			String finishTime = VillageUtil.getFinishTime(townHallResponse);
+			if(StringUtils.isEmpty(finishTime)) {
+				return new Status("NOT.ENOUGH.RESOURCE", 400);
+			}else {
+				return new Status("CELEBRATION.ONGOING", 400);
+			}
+		}
+		
 	}
 }
