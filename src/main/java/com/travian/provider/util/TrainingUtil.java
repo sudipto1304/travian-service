@@ -26,6 +26,7 @@ public class TrainingUtil {
 		data.put("z", doc.select("input[name=z]").attr("value"));
 		data.put("a", doc.select("input[name=a]").attr("value"));
 		data.put("s", doc.select("input[name=s]").attr("value"));
+		data.put("s1", "ok");
 		return data;
 	}
 	
