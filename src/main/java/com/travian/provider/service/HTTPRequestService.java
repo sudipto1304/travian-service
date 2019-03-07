@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.travian.provider.config.ProxyProperties;
 import com.travian.provider.request.HttpRequest;
 import com.travian.provider.response.HttpResponse;
+import com.travian.provider.util.Constants;
 
 @Service
 public class HTTPRequestService {
@@ -37,16 +38,16 @@ public class HTTPRequestService {
 
 			);
 			if (request.getCookies() != null && !request.getCookies().isEmpty()) {
-				res = Jsoup.connect(url).proxy(proxy).cookies(request.getCookies()).method(Connection.Method.GET)
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).proxy(proxy).cookies(request.getCookies()).method(Connection.Method.GET)
 						.execute();
 			} else {
-				res = Jsoup.connect(url).proxy(proxy).method(Connection.Method.GET).execute();
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).proxy(proxy).method(Connection.Method.GET).execute();
 			}
 		} else {
 			if (request.getCookies() != null && !request.getCookies().isEmpty()) {
-				res = Jsoup.connect(url).cookies(request.getCookies()).method(Connection.Method.GET).execute();
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).cookies(request.getCookies()).method(Connection.Method.GET).execute();
 			} else {
-				res = Jsoup.connect(url).method(Connection.Method.GET).execute();
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).method(Connection.Method.GET).execute();
 			}
 		}
 
@@ -71,17 +72,17 @@ public class HTTPRequestService {
 
 			);
 			if (request.getCookies() != null && !request.getCookies().isEmpty()) {
-				res = Jsoup.connect(url).proxy(proxy).cookies(request.getCookies()).data(request.getData())
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).proxy(proxy).cookies(request.getCookies()).data(request.getData())
 						.method(Connection.Method.POST).execute();
 			} else {
-				res = Jsoup.connect(url).proxy(proxy).data(request.getData()).method(Connection.Method.POST).execute();
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).proxy(proxy).data(request.getData()).method(Connection.Method.POST).execute();
 			}
 		} else {
 			if (request.getCookies() != null && !request.getCookies().isEmpty()) {
-				res = Jsoup.connect(url).cookies(request.getCookies()).data(request.getData())
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).cookies(request.getCookies()).data(request.getData())
 						.method(Connection.Method.POST).execute();
 			} else {
-				res = Jsoup.connect(url).data(request.getData()).method(Connection.Method.POST).execute();
+				res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).data(request.getData()).method(Connection.Method.POST).execute();
 			}
 		}
 
