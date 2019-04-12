@@ -27,5 +27,6 @@ public class Village implements Serializable{
 	private List<VillageTroop> villageTroops;
 	private boolean isTownHallPresent;
 	private int thId;
+	private IncomingAttack incomingAttack;
 
 }

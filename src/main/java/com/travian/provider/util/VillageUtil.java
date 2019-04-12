@@ -19,6 +19,7 @@ import com.travian.provider.request.TradeRouteRequest;
 import com.travian.provider.response.Building;
 import com.travian.provider.response.Fields;
 import com.travian.provider.response.HttpResponse;
+import com.travian.provider.response.IncomingAttack;
 import com.travian.provider.response.Resource;
 import com.travian.provider.response.Village;
 import com.travian.provider.response.VillageTroop;
@@ -29,7 +30,21 @@ public class VillageUtil {
 
 	private static boolean isSameField = false;
 
-	public static void parseResource(HttpResponse response, Village village) {
+	
+	public static void parseDorf1(HttpResponse response, Village village) {
+		parseResource(response, village);
+		parseCommonAttributes(response, village);
+		parseVillageTroops(response, village);
+		parseIncomingAttack(response, village);
+	}
+	
+	
+	public static void parseDorf2(HttpResponse response, Village village) {
+		parseBuildingResponse(response, village);
+	}
+	
+	
+	private static void parseResource(HttpResponse response, Village village) {
 		Resource resource = new Resource();
 		Document doc = Jsoup.parse(response.getBody());
 		String resourceElementsStr = doc.select("map#rx").html();
@@ -135,7 +150,7 @@ public class VillageUtil {
 		return field;
 	}
 
-	public static void parseCommonAttributes(HttpResponse response, Village village) {
+	private static void parseCommonAttributes(HttpResponse response, Village village) {
 		Document doc = Jsoup.parse(response.getBody());
 		village.setVillageName(doc.select("div#villageNameField").text());
 		village.setActive(true);
@@ -159,7 +174,7 @@ public class VillageUtil {
 
 	}
 
-	public static void parseBuildingResponse(HttpResponse response, final Village village) {
+	private static void parseBuildingResponse(HttpResponse response, final Village village) {
 		String buildingElementStr = Jsoup.parse(response.getBody()).select("div#village_map").html();
 		buildingElementStr = buildingElementStr.replaceAll("&gt;", "</div>").replaceAll("<span class=\" level\">", "")
 				.replaceAll(":", "\"").replaceAll("<br>", ">");
@@ -209,7 +224,7 @@ public class VillageUtil {
 		village.setBuildings(buildings);
 	}
 
-	public static void parseVillageTroops(HttpResponse response, final Village village) {
+	private static void parseVillageTroops(HttpResponse response, final Village village) {
 		Document doc = Jsoup.parse(response.getBody());
 		List<VillageTroop> villageTroops = new ArrayList<VillageTroop>();
 		Elements troopCountElms = doc.select("table#troops > tbody > tr > td.num");
@@ -221,6 +236,26 @@ public class VillageUtil {
 			villageTroops.add(troop);
 		}
 		village.setVillageTroops(villageTroops);
+	}
+
+	private static void parseIncomingAttack(HttpResponse response, final Village village) {
+		Document doc = Jsoup.parse(response.getBody());
+
+		Elements incomingTroop = doc.select("span.a1");
+		if (incomingTroop != null && incomingTroop.size() > 0) {
+			String text = incomingTroop.get(0).text();
+			Element parentTd = incomingTroop.get(0).parent().parent();
+			String duration = parentTd.select("div.dur_r > span.timer").get(0).attr("value");
+			Element parentTr = parentTd.parent();
+			String link = parentTr.select("td.typ > a").attr("href");
+			IncomingAttack attack = new IncomingAttack();
+			attack.setAttackText(text);
+			attack.setAttackCount(Integer.valueOf(text.replace("Attack", "").replace("Attacks", "").trim()));
+			attack.setDuration(Long.valueOf(duration));
+			attack.setLink(link);
+			village.setIncomingAttack(attack);
+		}
+
 	}
 
 	public static void parseMarketPlaceTradeRoutes(HttpResponse response, final TradeRouteRequest request) {

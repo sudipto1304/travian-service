@@ -47,8 +47,7 @@ public class VillageService {
 			HttpResponse resourceResponse = httpService.get(resourceRequest);
 			village.setLink(link);
 			village.setVillageId(link.substring(link.indexOf("=")+1, link.length()-1));
-			VillageUtil.parseResource(resourceResponse, village);
-			VillageUtil.parseCommonAttributes(resourceResponse, village);
+			VillageUtil.parseDorf1(resourceResponse, village);
 			
 			HttpRequest buildingRequest  = new HttpRequest();
 			buildingRequest.setCookies(cookies);
@@ -56,8 +55,7 @@ public class VillageService {
 			buildingRequest.setHttpMethod(HttpMethod.GET);
 			buildingRequest.setPath("/dorf2.php"+link);
 			HttpResponse buildingResponse = httpService.get(buildingRequest);
-			VillageUtil.parseBuildingResponse(buildingResponse, village);
-			VillageUtil.parseVillageTroops(resourceResponse, village);
+			VillageUtil.parseDorf2(buildingResponse, village);
 			return village;
 		} catch (Exception e) {
 			Log.error("", e);
