@@ -318,4 +318,55 @@ public class VillageUtil {
 			return elements.get(0).text();
 		}
 	}
+	
+	
+	public static Map<String, String> parseSendTroopResponse(HttpResponse response) {
+		Document doc = Jsoup.parse(response.getBody());
+		Map<String, String> parsedResponse = new HashMap<>();
+		Elements hiddenElm = doc.select("input[type=hidden]");
+		hiddenElm.forEach(e->{
+			if("timestamp".equals(e.attr("name"))) {
+				parsedResponse.put("timestamp", e.attr("value"));
+			}
+			if("timestamp_checksum".equals(e.attr("name"))) {
+				parsedResponse.put("timestamp_checksum", e.attr("value"));
+			}
+			if("b".equals(e.attr("name"))) {
+				parsedResponse.put("b", e.attr("value"));
+			}
+			if("currentDid".equals(e.attr("name"))) {
+				parsedResponse.put("currentDid", e.attr("value"));
+			}
+			
+		});
+		parsedResponse.put("t1", doc.select("input[name=t1]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t2", doc.select("input[name=t2]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t3", doc.select("input[name=t3]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t4", doc.select("input[name=t4]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t5", doc.select("input[name=t5]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t6", doc.select("input[name=t6]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t7", doc.select("input[name=t7]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t8", doc.select("input[name=t8]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t9", doc.select("input[name=t9]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		parsedResponse.put("t10", doc.select("input[name=t10]").get(0).parent().select("a").text().replaceAll("\\u202C", "").replaceAll("\\u202D", ""));
+		return parsedResponse;
+		
+	}
+	
+	public static Map<String, String> parseSendTroopConfirmResponse(HttpResponse response) {
+		Document doc = Jsoup.parse(response.getBody());
+		Map<String, String> parsedResponse = new HashMap<>();
+		Elements hiddenElm = doc.select("input[type=hidden]");
+		hiddenElm.forEach(e->{
+			parsedResponse.put(e.attr("name"), e.attr("value"));
+		});
+		parsedResponse.put("s1", "ok");
+		return parsedResponse;
+	}
+	
+	public static String getCrossLink(HttpResponse response) {
+		Document doc = Jsoup.parse(response.getBody());
+		String link = doc.select("button[title=cancel]").get(0).attr("onclick");
+		return link.substring(link.indexOf("\'")+1, link.indexOf(";")-1);
+	}
 }

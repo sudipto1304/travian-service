@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.travian.provider.request.CelebrationRequest;
 import com.travian.provider.request.DeleteTradeRouteRequest;
 import com.travian.provider.request.TradeRouteRequest;
+import com.travian.provider.request.TroopEvasionRequest;
 import com.travian.provider.request.VillageInfoRequest;
+import com.travian.provider.response.EvasionResponse;
 import com.travian.provider.response.Status;
 import com.travian.provider.response.Village;
 import com.travian.provider.service.VillageService;
@@ -86,6 +88,29 @@ public class VillageController {
 	public ResponseEntity<Status> initiateCelebration(@RequestBody CelebrationRequest request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
 		Status status = service.initiateCelebration(request);
 		return new ResponseEntity<>(status, HttpStatus.OK);
+	}
+	
+	
+	@ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Created", response = EvasionResponse.class),
+            @ApiResponse(code = 412, message = "Precondition Failed"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+	@RequestMapping(value="/initiateTroopEvation", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EvasionResponse> initiateTroopEvasion(@RequestBody TroopEvasionRequest request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
+		EvasionResponse response = service.initiateTroopEvasion(request);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	@ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Created", response = Status.class),
+            @ApiResponse(code = 412, message = "Precondition Failed"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+	@RequestMapping(value="/resolveEvasion", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Status> resolveEvasion(@RequestBody TroopEvasionRequest request, HttpServletRequest servletRequest, @RequestHeader HttpHeaders headers) throws IOException {
+		Status response = service.resolveEvasion(request);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	
