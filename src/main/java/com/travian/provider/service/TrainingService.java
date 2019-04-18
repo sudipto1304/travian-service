@@ -29,6 +29,9 @@ public class TrainingService {
 		httpRequest.setCookies(request.getCookies());
 		httpRequest.setHost(request.getHost());
 		httpRequest.setHttpMethod(HttpMethod.GET);
+		if(request.getPath()==null) {
+			request.setPath("/build.php?newdid="+request.getVillageId()+"&id="+request.getBuildingId());
+		}
 		httpRequest.setPath(request.getPath());
 		HttpResponse httpResponse = httpService.get(httpRequest);
 		Map<String, String> data = TrainingUtil.getTroopCount(httpResponse, request.getTroopType());

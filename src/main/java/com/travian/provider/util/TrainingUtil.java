@@ -15,11 +15,11 @@ public class TrainingUtil {
 	public static Map<String, String> getTroopCount(HttpResponse response, String troopType) {
 		Document doc = Jsoup.parse(response.getBody());
 		Map<String, String> data = new HashMap<String, String>();
-		Elements elements = doc.select("div.action > div.details");
+		Elements elements = doc.select("div.cta");
 		for(Element elm : elements) {
 			if(troopType.equals(elm.select("input.text").attr("name"))) {
 				Elements links = elm.select("a");
-				data.put(troopType, links.get(links.size()-1).text());
+				data.put(troopType, links.get(0).text());
 			}
 		}
 		data.put("id", doc.select("input[name=id]").attr("value"));

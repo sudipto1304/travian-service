@@ -102,6 +102,7 @@ public class VillageService {
 			postData.put("t", request.getT());
 			postData.put("trid", request.getTrid());
 			postData.put("option", request.getOption());
+			postData.put("every", "24");
 			if(Log.isInfoEnabled())
 				Log.info("creating trade routes for "+postData+" from village ::"+request.getSourceVillage()+"::to village::"+request.getDestinationVillage());
 			tradeRouteRq.setData(postData);
