@@ -7,7 +7,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class EvasionResponse implements Serializable{
+public class EvasionResponse extends Status implements Serializable{
 	
 	private String destinationVillage;
 	private String t1;

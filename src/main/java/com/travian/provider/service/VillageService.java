@@ -194,6 +194,15 @@ public class VillageService {
 		evasionRequest1.setHttpMethod(HttpMethod.POST);
 		evasionRequest1.setData(data);
 		Map<String, String> finalData = VillageUtil.parseSendTroopConfirmResponse(httpService.post(evasionRequest1));
+		if(Integer.valueOf(finalData.get("t1"))==0 && Integer.valueOf(finalData.get("t2"))==0 && Integer.valueOf(finalData.get("t3"))==0 && Integer.valueOf(finalData.get("t4"))==0 && Integer.valueOf(finalData.get("t5"))==0 && Integer.valueOf(finalData.get("t6"))==0 && Integer.valueOf(finalData.get("t7"))==0 && Integer.valueOf(finalData.get("t8"))==0 && Integer.valueOf(finalData.get("t9"))==0 && Integer.valueOf(finalData.get("t10"))==0 ) {
+			if(Log.isInfoEnabled())
+				Log.info("Fianl troop details data::"+finalData+" as there is no troop, no need to resolve attack");
+			
+			EvasionResponse response = new EvasionResponse();
+			response.setStatus("NO.TROOP.PRESENT");
+			response.setStatusCode(412);
+			return response;
+		}
 		HttpRequest evasionConfirmRequest = new HttpRequest();
 		evasionConfirmRequest.setCookies(request.getCookies());
 		evasionConfirmRequest.setHost(request.getHost());
