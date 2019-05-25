@@ -3,6 +3,7 @@ package com.travian.provider.service;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.URLEncoder;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Connection;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.travian.provider.config.ProxyProperties;
 import com.travian.provider.request.HttpRequest;
 import com.travian.provider.response.HttpResponse;
@@ -97,4 +100,31 @@ public class HTTPRequestService {
 		return response;
 	}
 
+	
+	public String ajax(HttpRequest request) throws IOException, UnirestException {
+		String url = "https://" + request.getHost() + request.getPath();
+		Connection.Response res = null;
+		final StringBuilder cookies = new StringBuilder();
+		request.getCookies().forEach((k,v)->{
+			cookies.append(k+"="+v+"; ");
+		});
+		if(Log.isInfoEnabled()) {
+			Log.info("Ajax Cookie::"+cookies.toString());
+			Log.info("Ajax body::"+request.getStringData());
+		}
+		res = Jsoup.connect(url).userAgent(Constants.USER_AGENT).header("cookie", cookies.toString())
+				.header("Content-Type", "application/x-www-form-urlencoded")
+				.header("user-agent", Constants.USER_AGENT)
+				.ignoreContentType(true)
+				.data(request.getData())
+				.method(Connection.Method.POST).execute();
+		
+		if (Log.isInfoEnabled()) {
+			Log.info("BodyResponse:::" + res.body());
+		}
+		return res.body();
+		
+	}
+	
+	
 }

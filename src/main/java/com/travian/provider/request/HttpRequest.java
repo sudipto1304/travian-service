@@ -14,6 +14,7 @@ public class HttpRequest implements Serializable{
 	private String host;
 	private HttpMethod httpMethod;
 	private Map<String, String> data;
+	private String stringData;
 	private Map<String, String> cookies;
 
 }
